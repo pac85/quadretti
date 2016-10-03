@@ -7,9 +7,11 @@ and may not be redistributed without written permission.*/
 #include <iostream>
 #include <string.h>
 #include <sstream>
+#include <fstream>
 #include <vector>
 #include <thread>
 #include <stdlib.h>
+#include <atomic>
 
 using namespace std;
 
@@ -65,7 +67,7 @@ void init()
 
 int current_index = 0;
 
-icolor colors[NUM_COLORS] = {icolor(0, 0, 0),icolor(30, 30, 30)};
+icolor colors[NUM_COLORS] = {icolor(0, 0, 0),icolor(0, 60, 36)};
 
 void next_color()
 {
@@ -148,6 +150,7 @@ void run()
 
             times = atoi(c_times);
 
+
             for(int t = 0;t < times;t++)
             {
                 for(int ic = 0; ic < 1 + (sizeof(p_text)/sizeof(char)); ic++)
@@ -165,8 +168,38 @@ void run()
     }
 }
 
+void load_file(string path)
+{
+    program.clear();
+    string line;
+    ifstream savefile(path, ios::in);
+    if (savefile.is_open())
+   {
+     while ( getline (savefile,line) )
+     {
+       program.push_back(line);
+       //program.push_back("\n");
+     }
+     savefile.close();
+   }
+}
+
+void save_file(string path)
+{
+    remove(path.c_str());
+    ofstream savefile(path, ios::out);
+    for(unsigned int i = 0;i < program.size(); i++)
+    {
+        savefile << program[i] << endl;
+    }
+}
+
 void parse_command(string cmd)
 {
+    if(!cmd.compare("#"))
+    {
+        return;
+    }
     if(!cmd.compare("list"))
     {
         for(unsigned int i = 0;i < program.size(); i++)
@@ -183,6 +216,8 @@ void parse_command(string cmd)
         // Clear the entire screen to our selected color.
         SDL_RenderClear(renderer);
 
+        current_index = 0;
+
         next_color();
         next_color();
 
@@ -191,8 +226,36 @@ void parse_command(string cmd)
         SDL_RenderPresent(renderer);
         return;
     }
+    if(!cmd.compare("save"))
+    {
+        string path;
+        cin >> path;
+        save_file(path);
+        return;
+    }
+    if(!cmd.compare("load"))
+    {
+        string path;
+        cin >> path;
+        load_file(path);
+        return;
+    }
     if(!cmd.compare("run"))
     {
+
+        // Select the color for drawing. It is set to red here.
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        // Clear the entire screen to our selected color.
+        SDL_RenderClear(renderer);
+
+        current_index = 0;
+
+        next_color();
+        next_color();
+
+
+        current_pos = ivec2(0, 0);
+
         run();
         return;
     }
