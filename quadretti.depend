@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1475509961 source:c:\users\antonino\desktop\quadretti\main.cpp
+	<SDL2/SDL.h>
+	<stdio.h>
+	<iostream>
+	<string.h>
+	<sstream>
+	<vector>
+	<thread>
+	<stdlib.h>
+
